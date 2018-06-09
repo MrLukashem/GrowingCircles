@@ -6,7 +6,9 @@ import android.graphics.Paint
 import com.mrlukashem.growingcircles.gameobjects.GameObject
 
 
-interface DrawingComponent {
-    fun draw(canvas: Canvas, paint: Paint)
-    fun has(gameObject: GameObject): Boolean
+class EmptyDrawingComponent : DrawingComponent {
+
+    override fun draw(canvas: Canvas, paint: Paint) {}
+
+    override fun has(gameObject: GameObject): Boolean = false
 }

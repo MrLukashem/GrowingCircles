@@ -8,7 +8,13 @@ import android.view.View
 
 import com.mrlukashem.growingcircles.FrameDrawnObservable
 import com.mrlukashem.growingcircles.FrameDrawnObserver
+import com.mrlukashem.growingcircles.drawingcomponents.BaseDrawingComponentFactory
+import com.mrlukashem.growingcircles.drawingcomponents.DrawingComponent
+import com.mrlukashem.growingcircles.drawingcomponents.DrawingComponentFactory
 import com.mrlukashem.growingcircles.gameobjects.GameObject
+import com.mrlukashem.growingcircles.gameobjects.GameObjectFactory
+import com.mrlukashem.growingcircles.gameobjects.GameObjectFactory.GameObjectType.*
+import com.mrlukashem.growingcircles.gameobjects.RandomGameObjectFactory
 
 
 class GameView(context: Context)
@@ -16,6 +22,7 @@ class GameView(context: Context)
 
     private val mPaint: Paint
     private val mGameObjects: MutableList<GameObject> = mutableListOf()
+    private val mDrawingComponents: MutableList<DrawingComponent> = mutableListOf()
     private val mFrameDrawnObservers: MutableList<FrameDrawnObserver> = mutableListOf()
 
     private var left = 0f
@@ -27,6 +34,16 @@ class GameView(context: Context)
         mPaint = Paint()
         mPaint.style = Paint.Style.FILL
         mPaint.color = Color.RED
+
+        initGameObjects()
+    }
+
+    private fun initGameObjects() {
+        val circleObjectsFactory: GameObjectFactory = RandomGameObjectFactory()
+        val gameObject: GameObject = circleObjectsFactory.create(CIRCLE_OBJECT)
+
+        val drawingComponentsFactory: DrawingComponentFactory = BaseDrawingComponentFactory()
+        val drawingComponent: DrawingComponent = drawingComponentsFactory.create(gameObject)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -36,11 +53,6 @@ class GameView(context: Context)
         bottom +=1
         canvas?.drawOval(left, top, right, bottom, mPaint)
 
-        canvas?.let {
-            mGameObjects.forEach {
-                it.draw(canvas)
-            }
-        }
         notifyObservers()
     }
 
