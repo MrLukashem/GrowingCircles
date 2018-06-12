@@ -1,4 +1,4 @@
-package com.mrlukashem.growingcircles
+package com.mrlukashem.growingcircles.views
 
 interface FrameDrawnObserver {
     fun onFrameDrawn()

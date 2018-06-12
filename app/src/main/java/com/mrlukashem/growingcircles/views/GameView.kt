@@ -1,62 +1,53 @@
 package com.mrlukashem.growingcircles.views
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.view.View
 
-import com.mrlukashem.growingcircles.FrameDrawnObservable
-import com.mrlukashem.growingcircles.FrameDrawnObserver
-import com.mrlukashem.growingcircles.drawingcomponents.BaseDrawingComponentFactory
-import com.mrlukashem.growingcircles.drawingcomponents.DrawingComponent
-import com.mrlukashem.growingcircles.drawingcomponents.DrawingComponentFactory
-import com.mrlukashem.growingcircles.gameobjects.GameObject
-import com.mrlukashem.growingcircles.gameobjects.GameObjectFactory
-import com.mrlukashem.growingcircles.gameobjects.GameObjectFactory.GameObjectType.*
-import com.mrlukashem.growingcircles.gameobjects.RandomGameObjectFactory
+import com.mrlukashem.growingcircles.animations.Drawable
 
 
 class GameView(context: Context)
     : View(context), FrameDrawnObservable {
 
-    private val mPaint: Paint
-    private val mGameObjects: MutableList<GameObject> = mutableListOf()
-    private val mDrawingComponents: MutableList<DrawingComponent> = mutableListOf()
+    private val tag = "GameView"
+
+    private val drawables: MutableList<Drawable> = mutableListOf()
     private val mFrameDrawnObservers: MutableList<FrameDrawnObserver> = mutableListOf()
 
-    private var left = 0f
-    private var top = 0f
-    private var right = 300f
-    private var bottom = 300f
-
     init {
-        mPaint = Paint()
-        mPaint.style = Paint.Style.FILL
-        mPaint.color = Color.RED
+//        val shader = RadialGradient(150f, 150f, 150f, intArrayOf(Color.BLUE, Color.BLACK), floatArrayOf(0.9f, 1.0f), Shader.TileMode.REPEAT)
+//        mPaint.shader= shader
+//        mPaint.strokeWidth = 10f
 
-        initGameObjects()
+//        mPaint.setShadowLayer(50f, 5f, 5f, Color.BLACK)
+//        setLayerType(LAYER_TYPE_SOFTWARE, mPaint)
     }
 
-    private fun initGameObjects() {
-        val circleObjectsFactory: GameObjectFactory = RandomGameObjectFactory()
-        val gameObject: GameObject = circleObjectsFactory.create(CIRCLE_OBJECT)
+    fun addDrawable(drawable: Drawable) {
+        drawables.add(drawable)
+    }
 
-        val drawingComponentsFactory: DrawingComponentFactory = BaseDrawingComponentFactory()
-        val drawingComponent: DrawingComponent = drawingComponentsFactory.create(gameObject)
+    fun removeDrawable(drawable: Drawable) {
+        drawables.remove(drawable)
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        right +=1
-        bottom +=1
-        canvas?.drawOval(left, top, right, bottom, mPaint)
+        drawables.forEach {
+            val drawable = it
+            canvas?.let {
+                drawable.draw(canvas)
+            }
+        }
 
         notifyObservers()
     }
 
     private fun notifyObservers() {
+        // Log.e(tag, "notifyObserves")
+
         mFrameDrawnObservers.forEach {
             it.onFrameDrawn()
         }
