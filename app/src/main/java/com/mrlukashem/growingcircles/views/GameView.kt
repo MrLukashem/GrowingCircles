@@ -4,45 +4,43 @@ import android.content.Context
 import android.graphics.*
 import android.view.View
 
+import com.mrlukashem.growingcircles.SpaceConverter
 import com.mrlukashem.growingcircles.animations.Drawable
+import com.mrlukashem.growingcircles.size
 
 
 class GameView(context: Context)
     : View(context), FrameDrawnObservable {
 
     private val tag = "GameView"
+    private val spaceConverter = SpaceConverter(context)
+    private val displaySize = spaceConverter.deviceDisplay.size()
 
-    private val drawables: MutableList<Drawable> = mutableListOf()
+    private val drawableComposite = DrawableComposite()
     private val mFrameDrawnObservers: MutableList<FrameDrawnObserver> = mutableListOf()
 
-    init {
-//        val shader = RadialGradient(150f, 150f, 150f, intArrayOf(Color.BLUE, Color.BLACK), floatArrayOf(0.9f, 1.0f), Shader.TileMode.REPEAT)
-//        mPaint.shader= shader
-//        mPaint.strokeWidth = 10f
-
-//        mPaint.setShadowLayer(50f, 5f, 5f, Color.BLACK)
-//        setLayerType(LAYER_TYPE_SOFTWARE, mPaint)
-    }
-
     fun addDrawable(drawable: Drawable) {
-        drawables.add(drawable)
+        drawableComposite.add(drawable)
     }
 
     fun removeDrawable(drawable: Drawable) {
-        drawables.remove(drawable)
+        drawableComposite.remove(drawable)
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        val decoratedCanvas = canvas?.chooseDrawingStrategy()
 
-        drawables.forEach {
-            val drawable = it
-            canvas?.let {
-                drawable.draw(canvas)
-            }
+        decoratedCanvas?.let {
+            drawableComposite.draw(it)
         }
 
         notifyObservers()
+    }
+
+    private fun Canvas.chooseDrawingStrategy(): Canvas {
+        // TODO: Should be more strategies according to a game level.
+        return MirroredCanvas(this, displaySize.y, displaySize.x)
     }
 
     private fun notifyObservers() {

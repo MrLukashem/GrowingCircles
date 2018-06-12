@@ -1,17 +1,18 @@
 package com.mrlukashem.growingcircles.gameobjects
 
-import android.graphics.Point
 import android.view.Display
+import com.mrlukashem.growingcircles.size
 
 import java.util.*
 
+import kotlin.math.abs
 
-class RandomGameObjectFactory(existingObjects: List<ShapeObject>, gameDisplay: Display)
+
+class RandomGameObjectFactory(existingObjects: List<ShapeObject>, private val gameDisplay: Display)
     : GameObjectFactory {
 
     private val existingObjects: MutableList<ShapeObject> = mutableListOf()
     private val random: Random = Random()
-    private val gameDisplay: Display = gameDisplay
 
     init {
         this.existingObjects.addAll(existingObjects)
@@ -36,17 +37,10 @@ class RandomGameObjectFactory(existingObjects: List<ShapeObject>, gameDisplay: D
     }
 
     private fun Random.nextInt(intRange: IntRange): Int {
-        return (Random().nextInt() % intRange.last) + intRange.start
-    }
-    
-    private fun size(): Point {
-        val size = Point()
-        gameDisplay.getSize(size)
-
-        return size
+        return abs((nextInt() % intRange.last) + intRange.start)
     }
 
-    private fun height() = size().y
+    private fun height() = gameDisplay.size().y
 
-    private fun width() = size().x
+    private fun width() = gameDisplay.size().x
 }

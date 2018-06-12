@@ -27,3 +27,10 @@ class SpaceConverter(private val context: Context) {
 fun Point.toDisplaySpace() = this
 
 fun Point.toGameSpace() = this
+
+fun Display.size(): Point {
+    val point = Point()
+    getSize(point)
+
+    return point
+}

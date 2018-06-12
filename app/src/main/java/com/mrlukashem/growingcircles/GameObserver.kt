@@ -9,6 +9,7 @@ import android.view.Choreographer
 
 import com.mrlukashem.growingcircles.animations.AnimationComponent
 import com.mrlukashem.growingcircles.animations.CircleShapeAnimation
+import com.mrlukashem.growingcircles.gameobjects.GameObjectFactory
 import com.mrlukashem.growingcircles.gameobjects.GrowingShapeObject
 import com.mrlukashem.growingcircles.gameobjects.RandomGameObjectFactory
 import com.mrlukashem.growingcircles.gameobjects.ShapeObject
@@ -63,13 +64,21 @@ class GameObserver(
         val shapesFactory = RandomGameObjectFactory(gameObjects, spaceConverter.gameDisplay)
 
         val shape = GrowingShapeObject(300f, 400f, 100f)
+
+        val randomShape = shapesFactory.create(GameObjectFactory.GameObjectType.CIRCLE_OBJECT)
+
         gameObjects.add(shape)
+        gameObjects.add(randomShape)
 
         val animation = CircleShapeAnimation(Color.rgb(	92,	107,	192))
         animation.attachTo(shape)
+        val animation2 = CircleShapeAnimation(Color.rgb(	92,	107,	192))
+        animation2.attachTo(randomShape)
 
         animationsComponents.add(animation)
+        animationsComponents.add(animation2)
         gameView.addDrawable(animation)
+        gameView.addDrawable(animation2)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
