@@ -7,12 +7,11 @@ import android.content.Context
 import android.graphics.Color
 import android.view.Choreographer
 
-import com.mrlukashem.growingcircles.animations.AnimationComponent
-import com.mrlukashem.growingcircles.animations.CircleShapeAnimation
-import com.mrlukashem.growingcircles.gameobjects.GameObjectFactory
-import com.mrlukashem.growingcircles.gameobjects.GrowingShapeObject
-import com.mrlukashem.growingcircles.gameobjects.RandomGameObjectFactory
-import com.mrlukashem.growingcircles.gameobjects.ShapeObject
+import com.mrlukashem.growingcircles.animations.DynamicCircleShapeAnimation
+import com.mrlukashem.growingcircles.gameobjects.ShapesFactory
+import com.mrlukashem.growingcircles.gameobjects.GrowingCircleShape
+import com.mrlukashem.growingcircles.gameobjects.RandomShapesFactory
+import com.mrlukashem.growingcircles.gameobjects.Shape
 import com.mrlukashem.growingcircles.views.FrameDrawnObserver
 import com.mrlukashem.growingcircles.views.GameView
 import com.mrlukashem.mediacontentprovider.multithreading.TasksDispatcher
@@ -31,7 +30,7 @@ class GameObserver(
 
     private val onFrameObservers: MutableList<OnFrameObserver> = mutableListOf()
     private val animationsComponents: MutableList<AnimationComponent> = mutableListOf()
-    private val gameObjects: MutableList<ShapeObject> = mutableListOf()
+    private val games: MutableList<Shape> = mutableListOf()
 
     private var lastFrameTimeMillis: Long = 0
 
@@ -61,22 +60,15 @@ class GameObserver(
     }
 
     private fun initGameComponents() {
-        val shapesFactory = RandomGameObjectFactory(gameObjects, spaceConverter.gameDisplay)
+        val shapesFactory = RandomShapesFactory(games, spaceConverter.gameDisplay)
 
-        val shape = GrowingShapeObject(300f, 400f, 100f)
+        val shape = GrowingCircleShape(300f, 400f, 100f)
 
-        val randomShape = shapesFactory.create(GameObjectFactory.GameObjectType.CIRCLE_OBJECT)
+        val randomShape = shapesFactory.create(ShapesFactory.ShapeType.CIRCLE_OBJECT)
 
-        gameObjects.add(shape)
-        gameObjects.add(randomShape)
+        games.add(shape)
+        games.add(randomShape)
 
-        val animation = CircleShapeAnimation(Color.rgb(	92,	107,	192))
-        animation.attachTo(shape)
-        val animation2 = CircleShapeAnimation(Color.rgb(	92,	107,	192))
-        animation2.attachTo(randomShape)
-
-        animationsComponents.add(animation)
-        animationsComponents.add(animation2)
         gameView.addDrawable(animation)
         gameView.addDrawable(animation2)
     }
@@ -100,7 +92,7 @@ class GameObserver(
         animationsComponents.forEach {
             it.onFrameOccurred(frameTimeMillis, deltaTimeMillis)
         }
-        gameObjects.forEach {
+        games.forEach {
             it.onFrameOccurred(frameTimeMillis, deltaTimeMillis)
         }
 

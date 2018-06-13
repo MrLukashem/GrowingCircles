@@ -13,9 +13,6 @@ class GameView(context: Context)
     : View(context), FrameDrawnObservable {
 
     private val tag = "GameView"
-    private val spaceConverter = SpaceConverter(context)
-    private val displaySize = spaceConverter.deviceDisplay.size()
-
     private val drawableComposite = DrawableComposite()
     private val mFrameDrawnObservers: MutableList<FrameDrawnObserver> = mutableListOf()
 
@@ -29,18 +26,12 @@ class GameView(context: Context)
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        val decoratedCanvas = canvas?.chooseDrawingStrategy()
 
-        decoratedCanvas?.let {
+        canvas?.let {
             drawableComposite.draw(it)
         }
 
         notifyObservers()
-    }
-
-    private fun Canvas.chooseDrawingStrategy(): Canvas {
-        // TODO: Should be more strategies according to a game level.
-        return MirroredCanvas(this, displaySize.y, displaySize.x)
     }
 
     private fun notifyObservers() {

@@ -8,30 +8,30 @@ import java.util.*
 import kotlin.math.abs
 
 
-class RandomGameObjectFactory(existingObjects: List<ShapeObject>, private val gameDisplay: Display)
-    : GameObjectFactory {
+class RandomShapesFactory(existings: List<Shape>, private val gameDisplay: Display)
+    : ShapesFactory {
 
-    private val existingObjects: MutableList<ShapeObject> = mutableListOf()
+    private val existings: MutableList<Shape> = mutableListOf()
     private val random: Random = Random()
 
     init {
-        this.existingObjects.addAll(existingObjects)
+        this.existings.addAll(existings)
     }
 
-    override fun create(gameObjectType: GameObjectFactory.GameObjectType): ShapeObject {
-        return when (gameObjectType) {
-            GameObjectFactory.GameObjectType.CIRCLE_OBJECT -> makeCircleObject()
+    override fun create(shapesType: ShapesFactory.ShapeType): Shape {
+        return when (shapesType) {
+            ShapesFactory.ShapeType.CIRCLE_OBJECT -> makeCircleObject()
         }
     }
 
-    private fun makeCircleObject(): ShapeObject {
+    private fun makeCircleObject(): Shape {
         val xPosition = random.nextInt(0..width())
         val yPosition = random.nextInt(0..height())
         val radius = random.nextInt(10..50)
 
-        val circleObject = GrowingShapeObject(xPosition.toFloat(), yPosition.toFloat(),
+        val circleObject = GrowingCircleShape(xPosition.toFloat(), yPosition.toFloat(),
                 radius.toFloat())
-        existingObjects.add(circleObject)
+        existings.add(circleObject)
 
         return circleObject
     }
