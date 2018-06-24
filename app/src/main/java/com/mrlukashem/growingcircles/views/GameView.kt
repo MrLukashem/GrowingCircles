@@ -3,18 +3,22 @@ package com.mrlukashem.growingcircles.views
 import android.content.Context
 import android.graphics.*
 import android.view.View
+import com.mrlukashem.growingcircles.Observers.FrameDrawnObservable
+import com.mrlukashem.growingcircles.Observers.FrameDrawnObserver
 
-import com.mrlukashem.growingcircles.SpaceConverter
-import com.mrlukashem.growingcircles.animations.Drawable
-import com.mrlukashem.growingcircles.size
+import com.mrlukashem.growingcircles.drawable.Drawable
 
 
 class GameView(context: Context)
-    : View(context), FrameDrawnObservable {
+    : View(context), FrameDrawnObservable, DrawingComponent {
 
     private val tag = "GameView"
     private val drawableComposite = DrawableComposite()
-    private val mFrameDrawnObservers: MutableList<FrameDrawnObserver> = mutableListOf()
+    private val mFrameDrawnObservers: MutableSet<FrameDrawnObserver> = mutableSetOf()
+
+    init {
+        setBackgroundColor(Color.rgb(237, 231, 246))
+    }
 
     fun addDrawable(drawable: Drawable) {
         drawableComposite.add(drawable)
@@ -49,4 +53,6 @@ class GameView(context: Context)
     override fun registerObserver(observer: FrameDrawnObserver) {
         mFrameDrawnObservers.add(observer)
     }
+
+    override fun performClick(): Boolean = super.performClick()
 }

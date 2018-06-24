@@ -1,4 +1,4 @@
-package com.mrlukashem.growingcircles
+package com.mrlukashem.growingcircles.main
 
 import android.view.View
 

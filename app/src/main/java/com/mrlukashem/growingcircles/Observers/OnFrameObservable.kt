@@ -1,4 +1,4 @@
-package com.mrlukashem.growingcircles
+package com.mrlukashem.growingcircles.Observers
 
 interface OnFrameObservable {
     fun registerObserver(observer: OnFrameObserver)

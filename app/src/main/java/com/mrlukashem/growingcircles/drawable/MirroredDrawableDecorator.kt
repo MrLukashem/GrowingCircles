@@ -1,7 +1,9 @@
-package com.mrlukashem.growingcircles.animations
+package com.mrlukashem.growingcircles.drawable
 
 import android.graphics.Canvas
 import android.view.Display
+import com.mrlukashem.growingcircles.drawable.Drawable
+import com.mrlukashem.growingcircles.drawable.DrawableDecorator
 
 import com.mrlukashem.growingcircles.views.MirroredCanvas
 

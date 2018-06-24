@@ -1,4 +1,4 @@
-package com.mrlukashem.growingcircles.animations
+package com.mrlukashem.growingcircles.drawable
 
 import android.graphics.Canvas
 

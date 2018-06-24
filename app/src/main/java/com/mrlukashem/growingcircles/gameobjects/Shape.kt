@@ -1,15 +1,16 @@
 package com.mrlukashem.growingcircles.gameobjects
 
+import android.graphics.PointF
+
 
 interface Shape {
 
-    val boundsHeight: Float
-    val boundsWidth: Float
-    var xPosition: Float
-    var yPosition: Float
+    var boundsRadius: Float
+    var position: PointF
 
     fun move(x: Float, y: Float)
-    fun hasCollisionWith(shape: Shape)
+    fun hasCollisionWith(shape: Shape): Boolean
+    fun contains(x: Float, y: Float): Boolean
 }
 
 fun Shape.toDisplaySpace(): Shape = this

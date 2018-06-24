@@ -1,7 +1,7 @@
 package com.mrlukashem.growingcircles.views
 
 import android.graphics.Canvas
-import com.mrlukashem.growingcircles.animations.Drawable
+import com.mrlukashem.growingcircles.drawable.Drawable
 
 
 class DrawableComposite: Drawable, MutableCollection<Drawable> {

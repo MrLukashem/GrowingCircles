@@ -1,4 +1,4 @@
-package com.mrlukashem.growingcircles.views
+package com.mrlukashem.growingcircles.Observers
 
 interface FrameDrawnObservable {
     fun registerObserver(observer: FrameDrawnObserver)
