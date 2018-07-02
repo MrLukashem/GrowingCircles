@@ -9,7 +9,7 @@ class GrowingCircleDrawableShape(override var position: PointF,
                                  radius: Float, hasCollisionStrategy: HasCollisionStrategy,
                                  rgbColor: Int)
     : CircleDrawableShape(
-        radius, position, hasCollisionStrategy, rgbColor), OnFrameObserver {
+        radius, position, rgbColor), OnFrameObserver {
 
     var counter = 0
 
@@ -25,7 +25,7 @@ class GrowingCircleDrawableShape(override var position: PointF,
     }
 
     private fun updateRadius(deltaTimeSeconds: Float) {
-        radius += (radius * 0.1f * deltaTimeSeconds)
+        radius += (radius * 0.3f * deltaTimeSeconds)
     }
 
     private fun Long.toSeconds(): Float = (this / 1000f)

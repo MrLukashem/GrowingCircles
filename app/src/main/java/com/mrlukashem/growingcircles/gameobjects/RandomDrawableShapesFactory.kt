@@ -3,6 +3,7 @@ package com.mrlukashem.growingcircles.gameobjects
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.PointF
+import android.util.Log
 import android.view.Display
 import com.mrlukashem.growingcircles.drawable.DrawableShape
 
@@ -16,6 +17,22 @@ class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, priva
     : DrawableShapesFactory {
 
     private val random: Random = Random()
+    private val colorsList: List<Int> = listOf(Color.rgb(255, 255, 0),
+        Color.rgb(199, 204, 0),
+            Color.rgb( 197, 17, 98),
+            Color.rgb(199, 205, 224),
+            Color.rgb(250, 250, 250),
+            Color.rgb(0, 184, 212),
+            Color.rgb(244, 67, 54),
+            Color.rgb(255, 255, 0),
+            Color.rgb(199, 204, 0),
+            Color.rgb( 197, 17, 98),
+            Color.rgb(199, 205, 224),
+            Color.rgb(250, 250, 250),
+            Color.rgb(0, 184, 212),
+            Color.rgb(109, 76, 65),
+            Color.rgb(109, 76, 65),
+            Color.rgb(244, 67, 54))
 
     override fun create(shapeType: DrawableShapesFactory.ShapeType): DrawableShape {
         return when (shapeType) {
@@ -79,21 +96,22 @@ class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, priva
 
     private fun width() = gameDisplay.size().x
 
-    private fun radiusMax() = (min(height(), width()) * 0.1).toInt()
+    private fun radiusMax() = (min(height(), width()) * 0.05).toInt()
 
-    private fun radiusMin() = (min(height(), width()) * 0.05).toInt()
+    private fun radiusMin() = (min(height(), width()) * 0.1).toInt()
 
-    private fun maxXPosition() = width() - (width() * 0.1).toInt()
+    private fun maxXPosition() = width() - (width() * 0.3).toInt()
 
-    private fun minXPosition() = (width() * 0.1).toInt()
+    private fun minXPosition() = 0
 
     private fun makeCircleObjectInternal(): DrawableShape {
-        val xPosition = random.nextInt(minXPosition()..maxXPosition())
-        val yPosition = random.nextInt(0..height())
         val radius = random.nextInt(radiusMin()..radiusMax())
+        val xPosition = random.nextInt(minXPosition() + radius .. maxXPosition() - radius)
+        val yPosition = random.nextInt(0 + radius..height() - radius)
 
+        Log.e("factory", "x = $xPosition, y  = $yPosition")
         return GrowingCircleDrawableShape(PointF( xPosition.toFloat(), yPosition.toFloat()), radius.toFloat(),
-                        ::defaultCircleBasedCollisionStrategy, Color.argb(50, random.nextInt(1 .. 360), 0, 238))
+                        ::defaultCircleBasedCollisionStrategy, colorsList[random.nextInt(0 .. 12)])
     }
 
     private fun Point.distanceTo(point: Point): Float {

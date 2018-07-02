@@ -2,11 +2,16 @@ package com.mrlukashem.growingcircles.views
 
 import android.content.Context
 import android.graphics.*
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import com.mrlukashem.growingcircles.Observers.FrameDrawnObservable
 import com.mrlukashem.growingcircles.Observers.FrameDrawnObserver
 
 import com.mrlukashem.growingcircles.drawable.Drawable
+import com.mrlukashem.mediacontentprovider.multithreading.Dispatcher
+import com.mrlukashem.mediacontentprovider.multithreading.MainThreadDispatcher
+import com.mrlukashem.mediacontentprovider.multithreading.TasksDispatcher
 
 
 class GameView(context: Context)
@@ -15,17 +20,24 @@ class GameView(context: Context)
     private val tag = "GameView"
     private val drawableComposite = DrawableComposite()
     private val mFrameDrawnObservers: MutableSet<FrameDrawnObserver> = mutableSetOf()
+    private val mainThreadDispatcher: Dispatcher<Unit> = MainThreadDispatcher<Unit>()
 
     init {
-        setBackgroundColor(Color.rgb(237, 231, 246))
+        setBackgroundColor(Color.rgb(63, 42, 96))
+        mainThreadDispatcher.begin()
     }
 
-    fun addDrawable(drawable: Drawable) {
-        drawableComposite.add(drawable)
+    override fun addDrawable(drawable: Drawable) {
+        mainThreadDispatcher.dispatch({
+            drawableComposite.add(drawable)
+        }, {})
     }
 
-    fun removeDrawable(drawable: Drawable) {
-        drawableComposite.remove(drawable)
+    override fun removeDrawable(drawable: Drawable) {
+        Log.e("r", "remove drawable = $drawable")
+        mainThreadDispatcher.dispatch({
+            drawableComposite.remove(drawable)
+        }, {})
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -39,7 +51,7 @@ class GameView(context: Context)
     }
 
     private fun notifyObservers() {
-        // Log.e(tag, "notifyObserves")
+        Log.e(tag, "drawables size = ${drawableComposite.size}")
 
         mFrameDrawnObservers.forEach {
             it.onFrameDrawn()

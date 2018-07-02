@@ -6,6 +6,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Context
 import android.graphics.PointF
+import android.util.Log
 import android.view.Choreographer
 import android.view.MotionEvent
 import android.view.View
@@ -40,7 +41,7 @@ class GameObserver(
     private val collisionObservable: CollisionObservable<DrawableShape> =
             ShapesCollisionObservable(drawableShapes)
     private val gameView: GameView = GameView(context)
-    private val drawableShapesController = DrawableShapesController(this, spaceManager)
+    private lateinit var drawableShapesController: DrawableShapesController
     private val shapeValueCounter: ValueCounter<Shape> = ShapeValueCounter()
     private lateinit var currentScoreAnimation: AnimatedComponent
 
@@ -48,8 +49,10 @@ class GameObserver(
     private var lastFrameTimeMillis: Long = 0
 
     init {
+        startDispatcher()
         registerToObservables()
 
+        prepareShapesController()
         prepareGameView()
         prepareAnimations()
         prepareOnFrameObservers()
@@ -58,9 +61,17 @@ class GameObserver(
         startFrameCallbacks()
     }
 
+    private fun startDispatcher() {
+        dispatcher.begin()
+    }
+
     private fun registerToObservables() {
         lifeCycle.addObserver(this)
         collisionObservable.registerObserver(this)
+    }
+
+    private fun prepareShapesController() {
+        drawableShapesController = DrawableShapesController(this, spaceManager)
     }
 
     private fun prepareGameView() {
@@ -84,26 +95,32 @@ class GameObserver(
         drawableShapesController.registerOnDestroyCallback {
             gameView.removeDrawable(it)
             drawableShapes.remove(it)
-
+            Log.e("wqe", "Destroyed = $it")
             val score: Int = if (currentScore.value != null) currentScore.value!! else 0
             currentScore.postValue(score + shapeValueCounter.calculate(it))
+
+//            MovingShapeAnimation(
+//                    it, 200f, currentScoreAnimation.coordinates, 350)
+//                    .start(this, gameView)
+//            gameView.postInvalidate()
 
             true
         }
         drawableShapesController.registerOnCreateCallback {
-            val decoratedDrawableShape = DrawableShapeCounterDecorator(shapeValueCounter, it)
+            val decoratedDrawableShape = RadialShadowDecorator(
+                    DrawableShapeCounterDecorator(shapeValueCounter, it))
+            //Log.e("eqwe", "created")
             drawableShapes.add(decoratedDrawableShape)
             gameView.addDrawable(decoratedDrawableShape)
 
             decoratedDrawableShape
         }
 
-        drawableShapesController.createFewShapes(10,
+        drawableShapesController.createFewShapes(20,
                 DrawableShapesFactory.ShapeType.CIRCLE_OBJECT)
     }
 
     private fun startFrameCallbacks() {
-        dispatcher.begin()
         dispatcher.dispatch({
             mChoreographer = Choreographer.getInstance()
         }, {
@@ -162,6 +179,7 @@ class GameObserver(
     }
 
     override fun onCollision(firstObj: DrawableShape, secondObj: DrawableShape) {
+        Log.e("Collision", "Collision detected")
         drawableShapesController.destroyShape(firstObj)
         drawableShapesController.destroyShape(secondObj)
     }
@@ -171,9 +189,6 @@ class GameObserver(
             drawableShapes.filter {
                 it.contains(motionEvent.x, motionEvent.y)
             }.forEach {
-                MovingShapeAnimation(
-                        it, 200f, currentScoreAnimation.coordinates, 350)
-                        .start(this, gameView)
                 dispatcher.dispatch({
                     drawableShapesController.destroyShape(it)
                 }, {})

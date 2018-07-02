@@ -15,3 +15,13 @@ fun Shape.toRectF(): RectF {
             convertedShape.position.x + boundsRadius,
             convertedShape.position.y + boundsRadius)
 }
+
+fun Shape.toRectF(xPosition: Float, yPosition: Float, radius: Float): RectF {
+    val convertedShape = toDisplaySpace()
+
+    return RectF(
+            convertedShape.position.x - radius,
+            convertedShape.position.y - radius,
+            convertedShape.position.x + radius,
+            convertedShape.position.y + radius)
+}

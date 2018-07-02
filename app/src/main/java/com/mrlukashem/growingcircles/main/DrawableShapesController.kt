@@ -1,5 +1,6 @@
 package com.mrlukashem.growingcircles.main
 
+import android.util.Log
 import com.mrlukashem.growingcircles.Observers.OnFrameObservable
 import com.mrlukashem.growingcircles.Observers.OnFrameObserver
 import com.mrlukashem.growingcircles.drawable.DrawableShape
@@ -43,6 +44,7 @@ class DrawableShapesController(onFrameObservable: OnFrameObservable, spaceManage
         }
 
         storage.addAll(createdShapes)
+        //Log.e("wewqe", "num of shapes = ${storage.size}")
         return createdShapes
     }
 

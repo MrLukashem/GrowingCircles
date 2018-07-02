@@ -39,7 +39,7 @@ class MovingShapeAnimation(entryShape: DrawableShape,
         paint.style = Paint.Style.FILL
         rotationAngle = calculateRotationAngle(entryShape.position.toVectorWith(destination))
 
-        val W = entryShape.position.x - destination.y
+        val W = entryShape.position.x - destination.x
         val Wx = entryShape.position.y - destination.y
         val Wy = entryShape.position.x * destination.y - entryShape.position.y * destination.x
         a = Wx / W
@@ -47,14 +47,15 @@ class MovingShapeAnimation(entryShape: DrawableShape,
     }
 
     override fun draw(canvas: Canvas) {
-        animatedShape.draw(ReplacedPaintCanvas(canvas, paint))
+        animatedShape.draw(canvas)
     }
 
     override fun onFrameOccurred(frameTimeMillis: Long, deltaTimeMillis: Long) {
         if (currentTimeMillis <= totalTimeMillis) {
             animatedShape.position.x = x(currentTimeMillis)
             animatedShape.position.y = y(animatedShape.position.x)
-            Log.e("wqewqe", "y = ${animatedShape.position.y}")
+            animatedShape.boundsRadius = radius(currentTimeMillis)
+            Log.e("wqewqe", "x = ${animatedShape.position.x} y = ${animatedShape.position.y}")
         } else {
             onAnimationCompleted()
         }
@@ -78,6 +79,10 @@ class MovingShapeAnimation(entryShape: DrawableShape,
 
         private fun x(currentTimeMillis: Long): Float {
             return x0 + (currentTimeMillis.toFloat() / totalTimeMillis.toFloat()) * (destination.x - x0)//ellipseCenter.x + a * cos(t)
+        }
+
+        private fun radius(currentTimeMillis: Long): Float {
+            return (1f - (currentTimeMillis.toFloat() / totalTimeMillis.toFloat())) * animatedShape.boundsRadius
         }
 
         private fun y(x: Float): Float = a * x + b//ellipseCenter.y + b * sin(t)

@@ -9,7 +9,8 @@ interface Shape {
     var position: PointF
 
     fun move(x: Float, y: Float)
-    fun hasCollisionWith(shape: Shape): Boolean
+    fun hasCollisionWith(shape: Shape, hasCollisionStrategy: (Shape, Shape) -> Boolean =
+            ::defaultCircleBasedCollisionStrategy): Boolean
     fun contains(x: Float, y: Float): Boolean
 }
 

@@ -3,9 +3,7 @@ package com.mrlukashem.growingcircles.gameobjects
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PointF
-import android.graphics.RectF
 import com.mrlukashem.growingcircles.drawable.DrawableShape
-import com.mrlukashem.growingcircles.utils.toRectF
 
 import kotlin.math.pow
 
@@ -15,7 +13,6 @@ typealias HasCollisionStrategy = ((Shape, Shape) -> Boolean)
 open class CircleDrawableShape(
         override var boundsRadius: Float,
         override var position: PointF,
-        private val hasCollisionStrategy: HasCollisionStrategy,
         rgbColor: Int) : DrawableShape {
 
     var radius: Float
@@ -24,7 +21,7 @@ open class CircleDrawableShape(
             boundsRadius = value
         }
 
-    private val paint = Paint()
+    override val paint = Paint()
 
     init {
         paint.style = Paint.Style.FILL
@@ -36,7 +33,8 @@ open class CircleDrawableShape(
         position.y += y
     }
 
-    override fun hasCollisionWith(shape: Shape): Boolean = hasCollisionStrategy(this, shape)
+    override fun hasCollisionWith(shape: Shape, hasCollisionStrategy: (Shape, Shape) -> Boolean)
+            : Boolean = hasCollisionStrategy(this, shape)
 
     override fun contains(x: Float, y: Float) = (circleProduct(x, y) <= radius.pow(2f))
 
@@ -45,7 +43,7 @@ open class CircleDrawableShape(
     }
 
     override fun draw(canvas: Canvas) {
-        canvas.drawOval(toRectF(), paint)
+        canvas.drawCircle(position.x, position.y, radius, paint)
     }
 
     override fun onFrameOccurred(frameTimeMillis: Long, deltaTimeMillis: Long) {

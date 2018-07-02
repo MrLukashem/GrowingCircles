@@ -1,11 +1,12 @@
 package com.mrlukashem.growingcircles.gameobjects
 
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.PointF
 import com.mrlukashem.growingcircles.drawable.DrawableShape
 
 
-abstract class DrawableShapeDecorator(private val ownShape: DrawableShape) : DrawableShape {
+abstract class DrawableShapeDecorator(protected val ownShape: DrawableShape) : DrawableShape {
 
     override var boundsRadius: Float
         get() = ownShape.boundsRadius
@@ -18,11 +19,15 @@ abstract class DrawableShapeDecorator(private val ownShape: DrawableShape) : Dra
             ownShape.position = value
         }
 
+    override val paint: Paint
+        get() = ownShape.paint
+
     override fun move(x: Float, y: Float) {
         ownShape.move(x, y)
     }
 
-    override fun hasCollisionWith(shape: Shape): Boolean = ownShape.hasCollisionWith(shape)
+    override fun hasCollisionWith(shape: Shape, hasCollisionStrategy: (Shape, Shape) -> Boolean)
+            : Boolean = ownShape.hasCollisionWith(shape, hasCollisionStrategy)
 
     override fun contains(x: Float, y: Float): Boolean = ownShape.contains(x, y)
 
