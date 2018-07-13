@@ -1,11 +1,32 @@
 package com.mrlukashem.growingcircles.gameobjects
 
+import android.view.Display
+import com.mrlukashem.growingcircles.utils.distanceTo
 import kotlin.math.abs
 import kotlin.math.pow
 
 
 fun defaultCircleBasedCollisionStrategy(firstShape: Shape, secondShape: Shape): Boolean {
-    val d = ((secondShape.position.x - firstShape.position.x).pow(2) + (secondShape.position.y - firstShape.position.y).pow(2)).pow(0.5f)
+    val shapesDistance = firstShape.position.distanceTo(secondShape.position)
 
-    return abs(secondShape.boundsRadius - firstShape.boundsRadius) <= d && d <= secondShape.boundsRadius + firstShape.boundsRadius
+    return shapesDistance <= secondShape.boundsRadius + firstShape.boundsRadius
+}
+
+interface CollisionStrategy {
+    fun collisionOccurred(firstShape: Shape, secondShape: Shape): Boolean
+}
+
+class ScreenBoundsCollisionStrategy(
+        private val shapesCollisionStrategy: (Shape, Shape) -> Boolean =
+                ::defaultCircleBasedCollisionStrategy, private val display: Display)
+    : CollisionStrategy {
+
+    override fun collisionOccurred(firstShape: Shape, secondShape: Shape): Boolean {
+        return shapesCollisionStrategy.invoke(firstShape, secondShape)
+                || screenBoundsCollisionOccurred(firstShape, secondShape)
+    }
+
+    private fun screenBoundsCollisionOccurred(firstShape: Shape, secondShape: Shape): Boolean {
+        return false
+    }
 }

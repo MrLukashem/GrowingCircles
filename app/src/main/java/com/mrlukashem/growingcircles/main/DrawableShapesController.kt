@@ -40,11 +40,11 @@ class DrawableShapesController(onFrameObservable: OnFrameObservable, spaceManage
             onCreateCallback?.invoke(newShape)?.apply {
                 newShape = this
             }
-            createdShapes.add(newShape)
+
+            storage.add(newShape)
+            createdShapes.add(storage.last())
         }
 
-        storage.addAll(createdShapes)
-        //Log.e("wewqe", "num of shapes = ${storage.size}")
         return createdShapes
     }
 

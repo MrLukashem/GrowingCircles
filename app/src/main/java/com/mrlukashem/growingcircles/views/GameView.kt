@@ -20,7 +20,7 @@ class GameView(context: Context)
     private val tag = "GameView"
     private val drawableComposite = DrawableComposite()
     private val mFrameDrawnObservers: MutableSet<FrameDrawnObserver> = mutableSetOf()
-    private val mainThreadDispatcher: Dispatcher<Unit> = MainThreadDispatcher<Unit>()
+    private val mainThreadDispatcher: Dispatcher<Unit> = MainThreadDispatcher()
 
     init {
         setBackgroundColor(Color.rgb(63, 42, 96))
@@ -34,7 +34,6 @@ class GameView(context: Context)
     }
 
     override fun removeDrawable(drawable: Drawable) {
-        Log.e("r", "remove drawable = $drawable")
         mainThreadDispatcher.dispatch({
             drawableComposite.remove(drawable)
         }, {})
@@ -51,8 +50,6 @@ class GameView(context: Context)
     }
 
     private fun notifyObservers() {
-        Log.e(tag, "drawables size = ${drawableComposite.size}")
-
         mFrameDrawnObservers.forEach {
             it.onFrameDrawn()
         }

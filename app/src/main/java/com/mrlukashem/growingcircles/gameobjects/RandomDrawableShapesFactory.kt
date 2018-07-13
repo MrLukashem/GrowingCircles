@@ -41,9 +41,11 @@ class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, priva
     }
 
     private fun makeCircleObject(): DrawableShape {
+        val screenBoundsCollisionStrategy = ScreenBoundsCollisionStrategy(
+                ::lowToleranceCollisionStrategy, gameDisplay)
         val shape = makeCircleObjectInternal()
         val collidedShape = existingShapes.find {
-            it.hasCollisionWith(shape)
+            it.hasCollisionWith(shape, screenBoundsCollisionStrategy::collisionOccurred)
         }
         collidedShape?.let {
             return makeCircleObject()
@@ -85,7 +87,7 @@ class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, priva
     }
 
     private fun Random.nextInt(intRange: IntRange): Int {
-        return abs((nextInt() % intRange.last) + intRange.start)
+        return abs((nextInt() % (intRange.last - intRange.start)) + intRange.start)
     }
 
     private fun Random.nextDouble(from: Double, to: Double): Double {
@@ -96,22 +98,20 @@ class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, priva
 
     private fun width() = gameDisplay.size().x
 
-    private fun radiusMax() = (min(height(), width()) * 0.05).toInt()
+    private fun radiusMax() = (min(height(), width()) * 0.15).toInt()
 
     private fun radiusMin() = (min(height(), width()) * 0.1).toInt()
 
-    private fun maxXPosition() = width() - (width() * 0.3).toInt()
-
-    private fun minXPosition() = 0
-
     private fun makeCircleObjectInternal(): DrawableShape {
         val radius = random.nextInt(radiusMin()..radiusMax())
-        val xPosition = random.nextInt(minXPosition() + radius .. maxXPosition() - radius)
-        val yPosition = random.nextInt(0 + radius..height() - radius)
+        val c = (radius * 2)
+        val d = (width() - radius * 2)
+        val xPosition = random.nextInt(radius .. (width() - radius))
+        val yPosition = random.nextInt(radius .. (height() - radius))
 
-        Log.e("factory", "x = $xPosition, y  = $yPosition")
+        Log.e("factory", "x = $xPosition, y  = $yPosition, r = $radius")
         return GrowingCircleDrawableShape(PointF( xPosition.toFloat(), yPosition.toFloat()), radius.toFloat(),
-                        ::defaultCircleBasedCollisionStrategy, colorsList[random.nextInt(0 .. 12)])
+                colorsList[random.nextInt(0 .. 12)])
     }
 
     private fun Point.distanceTo(point: Point): Float {
@@ -119,4 +119,16 @@ class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, priva
     }
 
     private fun randomAlpha(): Float = random.nextDouble(0.0, 2.0 * PI).toFloat()
+
+    private fun lowToleranceCollisionStrategy(firstShape: Shape, secondShape: Shape): Boolean {
+        var lowToleranceRadius = firstShape.boundsRadius + firstShape.boundsRadius * .2f
+        val largerRadiusFirstShape = CircleDrawableShape(
+                lowToleranceRadius, firstShape.position, 0)
+
+        lowToleranceRadius = secondShape.boundsRadius + secondShape.boundsRadius * .2f
+        val largerRadiusSecondShape = CircleDrawableShape(
+                lowToleranceRadius, secondShape.position, 0)
+
+        return largerRadiusFirstShape.hasCollisionWith(largerRadiusSecondShape)
+    }
 }

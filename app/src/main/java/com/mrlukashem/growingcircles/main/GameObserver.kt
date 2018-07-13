@@ -95,7 +95,7 @@ class GameObserver(
         drawableShapesController.registerOnDestroyCallback {
             gameView.removeDrawable(it)
             drawableShapes.remove(it)
-            Log.e("wqe", "Destroyed = $it")
+            //Log.e("wqe", "Destroyed = $it")
             val score: Int = if (currentScore.value != null) currentScore.value!! else 0
             currentScore.postValue(score + shapeValueCounter.calculate(it))
 
@@ -116,7 +116,7 @@ class GameObserver(
             decoratedDrawableShape
         }
 
-        drawableShapesController.createFewShapes(20,
+        drawableShapesController.createFewShapes(10,
                 DrawableShapesFactory.ShapeType.CIRCLE_OBJECT)
     }
 
@@ -179,7 +179,7 @@ class GameObserver(
     }
 
     override fun onCollision(firstObj: DrawableShape, secondObj: DrawableShape) {
-        Log.e("Collision", "Collision detected")
+        //Log.e("Collision", "Collision detected")
         drawableShapesController.destroyShape(firstObj)
         drawableShapesController.destroyShape(secondObj)
     }
