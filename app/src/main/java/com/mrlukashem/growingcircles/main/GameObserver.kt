@@ -26,11 +26,15 @@ import com.mrlukashem.mediacontentprovider.multithreading.TasksDispatcher
 
 
 class GameObserver(
-        private val context: Context,
+        context: Context,
         private val lifeCycle: Lifecycle,
-        private val viewOwner: ViewOwner)
+        private val viewOwner: ViewOwner,
+        private val onCollisionStrategy: (
+                collidedShapes: Pair<DrawableShape, DrawableShape>,
+                shapesController: DrawableShapesController,
+                valueCounter: ValueCounter<Shape>) -> Unit)
     : LifecycleObserver, Choreographer.FrameCallback, FrameDrawnObserver,
-        CollisionObserver<DrawableShape>, OnFrameObservable {
+        CollisionObserver<DrawableShape>, OnFrameObservable, GameSupervisor {
 
     private val onFrameObservers: MutableList<OnFrameObserver> = mutableListOf()
     private val drawableShapes: MutableList<DrawableShape> = mutableListOf()
@@ -95,21 +99,12 @@ class GameObserver(
         drawableShapesController.registerOnDestroyCallback {
             gameView.removeDrawable(it)
             drawableShapes.remove(it)
-            //Log.e("wqe", "Destroyed = $it")
-            val score: Int = if (currentScore.value != null) currentScore.value!! else 0
-            currentScore.postValue(score + shapeValueCounter.calculate(it))
-
-//            MovingShapeAnimation(
-//                    it, 200f, currentScoreAnimation.coordinates, 350)
-//                    .start(this, gameView)
-//            gameView.postInvalidate()
 
             true
         }
         drawableShapesController.registerOnCreateCallback {
             val decoratedDrawableShape = RadialShadowDecorator(
                     DrawableShapeCounterDecorator(shapeValueCounter, it))
-            //Log.e("eqwe", "created")
             drawableShapes.add(decoratedDrawableShape)
             gameView.addDrawable(decoratedDrawableShape)
 
@@ -179,9 +174,30 @@ class GameObserver(
     }
 
     override fun onCollision(firstObj: DrawableShape, secondObj: DrawableShape) {
-        //Log.e("Collision", "Collision detected")
+        Log.i(GameObserver::class.java.name, "Collision detected")
+        if (isNotSameKind(firstObj, secondObj)) {
+            updateCurrentScore(firstObj)
+            updateCurrentScore(secondObj)
+        }
+
         drawableShapesController.destroyShape(firstObj)
         drawableShapesController.destroyShape(secondObj)
+
+        dispatcher.dispatch({
+            onCollisionStrategy.invoke(
+                    Pair(firstObj, secondObj), drawableShapesController, shapeValueCounter)
+        }, {})
+    }
+
+    private fun isNotSameKind(firstObj: DrawableShape, secondObj: DrawableShape): Boolean {
+        return firstObj.paint.color != secondObj.paint.color
+    }
+
+    private fun updateCurrentScore(vararg shapeObjects: DrawableShape) {
+        shapeObjects.forEach {
+            val score: Int = if (currentScore.value != null) currentScore.value!! else 0
+            currentScore.postValue(score + shapeValueCounter.calculate(it))
+        }
     }
 
     private fun onTouchEvent(view: View?, motionEvent: MotionEvent?): Boolean {
@@ -200,5 +216,14 @@ class GameObserver(
 
     override fun onFrameDrawn() {
         mChoreographer.postFrameCallback(this)
+    }
+
+    override fun start(gameOptions: Map<String, String>) {
+        val runTime = gameOptions["time"]
+
+    }
+
+    override fun reset() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

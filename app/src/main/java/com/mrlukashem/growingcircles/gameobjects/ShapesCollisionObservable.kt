@@ -22,14 +22,15 @@ class ShapesCollisionObservable(private val drawableShapes: List<DrawableShape>)
         checkShapesCollisions()
     }
 
-    private fun checkShapesCollisions() {
+    private fun checkShapesCollisions(
+            hasCollisionStrategy: HasCollisionStrategy = ::defaultCircleBasedCollisionStrategy) {
         val detectedCollisionPairs: MutableList<Pair<DrawableShape, DrawableShape>> = mutableListOf()
         for (i in 0 until drawableShapes.size) {
             for (j in i+1 until drawableShapes.size) {
                 val firstShape = drawableShapes[i]
                 val secondShape = drawableShapes[j]
 
-                if (firstShape.hasCollisionWith(secondShape)) {
+                if (firstShape.hasCollisionWith(secondShape, hasCollisionStrategy)) {
                     detectedCollisionPairs.add(Pair(drawableShapes[i], drawableShapes[j]))
                 }
             }
