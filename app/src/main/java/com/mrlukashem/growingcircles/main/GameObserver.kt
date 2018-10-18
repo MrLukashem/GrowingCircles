@@ -34,7 +34,7 @@ class GameObserver(
                 shapesController: DrawableShapesController,
                 valueCounter: ValueCounter<Shape>) -> Unit)
     : LifecycleObserver, Choreographer.FrameCallback, FrameDrawnObserver,
-        CollisionObserver<DrawableShape>, OnFrameObservable, GameSupervisor {
+        CollisionObserver<DrawableShape>, OnFrameObservable {
 
     private val onFrameObservers: MutableList<OnFrameObserver> = mutableListOf()
     private val drawableShapes: MutableList<DrawableShape> = mutableListOf()
@@ -202,8 +202,9 @@ class GameObserver(
 
     private fun onTouchEvent(view: View?, motionEvent: MotionEvent?): Boolean {
         motionEvent?.let {
+            val event = it
             drawableShapes.filter {
-                it.contains(motionEvent.x, motionEvent.y)
+                it.contains(event.x, event.y)
             }.forEach {
                 dispatcher.dispatch({
                     drawableShapesController.destroyShape(it)
@@ -218,12 +219,11 @@ class GameObserver(
         mChoreographer.postFrameCallback(this)
     }
 
-    override fun start(gameOptions: Map<String, String>) {
-        val runTime = gameOptions["time"]
+    fun start() {
 
     }
 
-    override fun reset() {
+    fun stop() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
