@@ -28,11 +28,11 @@ import com.mrlukashem.mediacontentprovider.multithreading.TasksDispatcher
 class GameObserver(
         context: Context,
         private val lifeCycle: Lifecycle,
-        private val viewOwner: ViewOwner,
-        private val onCollisionStrategy: (
+        private val viewOwner: ViewOwner
+        /*private val onCollisionStrategy: (
                 collidedShapes: Pair<DrawableShape, DrawableShape>,
                 shapesController: DrawableShapesController,
-                valueCounter: ValueCounter<Shape>) -> Unit)
+                valueCounter: ValueCounter<Shape>) -> Unit)*/)
     : LifecycleObserver, Choreographer.FrameCallback, FrameDrawnObserver,
         CollisionObserver<DrawableShape>, OnFrameObservable {
 
@@ -111,7 +111,7 @@ class GameObserver(
             decoratedDrawableShape
         }
 
-        drawableShapesController.createFewShapes(10,
+        drawableShapesController.createFewShapes(7,
                 DrawableShapesFactory.ShapeType.CIRCLE_OBJECT)
     }
 
@@ -174,19 +174,25 @@ class GameObserver(
     }
 
     override fun onCollision(firstObj: DrawableShape, secondObj: DrawableShape) {
+
         Log.i(GameObserver::class.java.name, "Collision detected")
-        if (isNotSameKind(firstObj, secondObj)) {
+        if (!isNotSameKind(firstObj, secondObj)) {
             updateCurrentScore(firstObj)
             updateCurrentScore(secondObj)
+        } else {
+            reduceCurrentScore(secondObj)
         }
 
         drawableShapesController.destroyShape(firstObj)
         drawableShapesController.destroyShape(secondObj)
 
-        dispatcher.dispatch({
-            onCollisionStrategy.invoke(
-                    Pair(firstObj, secondObj), drawableShapesController, shapeValueCounter)
-        }, {})
+        drawableShapesController.createShape(DrawableShapesFactory.ShapeType.CIRCLE_OBJECT)
+        drawableShapesController.createShape(DrawableShapesFactory.ShapeType.CIRCLE_OBJECT)
+
+//        dispatcher.dispatch({
+//            onCollisionStrategy.invoke(
+//                    Pair(firstObj, secondObj), drawableShapesController, shapeValueCounter)
+//        }, {})
     }
 
     private fun isNotSameKind(firstObj: DrawableShape, secondObj: DrawableShape): Boolean {
@@ -200,6 +206,13 @@ class GameObserver(
         }
     }
 
+    private fun reduceCurrentScore(vararg shapeObjects: DrawableShape) {
+        shapeObjects.forEach {
+            val score: Int = if (currentScore.value != null) currentScore.value!! else 0
+            currentScore.postValue(score - shapeValueCounter.calculate(it))
+        }
+    }
+
     private fun onTouchEvent(view: View?, motionEvent: MotionEvent?): Boolean {
         motionEvent?.let {
             val event = it
@@ -208,6 +221,8 @@ class GameObserver(
             }.forEach {
                 dispatcher.dispatch({
                     drawableShapesController.destroyShape(it)
+                    drawableShapesController.createShape(
+                            DrawableShapesFactory.ShapeType.CIRCLE_OBJECT)
                 }, {})
             }
         }
