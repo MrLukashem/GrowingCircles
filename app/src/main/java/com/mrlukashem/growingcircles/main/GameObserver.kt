@@ -53,16 +53,6 @@ class GameObserver(
     private var lastFrameTimeMillis: Long = 0
 
     init {
-        startDispatcher()
-        registerToObservables()
-
-        prepareShapesController()
-        prepareGameView()
-        prepareAnimations()
-        prepareOnFrameObservers()
-        prepareGameObjectsStorage()
-
-        startFrameCallbacks()
     }
 
     private fun startDispatcher() {
@@ -235,7 +225,16 @@ class GameObserver(
     }
 
     fun start() {
+        startDispatcher()
+        registerToObservables()
 
+        prepareShapesController()
+        prepareGameView()
+        prepareAnimations()
+        prepareOnFrameObservers()
+        prepareGameObjectsStorage()
+
+        startFrameCallbacks()
     }
 
     fun stop() {
