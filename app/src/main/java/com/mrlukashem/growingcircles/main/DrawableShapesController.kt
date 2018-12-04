@@ -10,14 +10,13 @@ import com.mrlukashem.growingcircles.gameobjects.RandomDrawableShapesFactory
 import com.mrlukashem.growingcircles.views.SpaceManager
 
 
-class DrawableShapesController(onFrameObservable: OnFrameObservable, spaceManager: SpaceManager)
+class DrawableShapesController(onFrameObservable: OnFrameObservable, spaceManager: SpaceManager,
+                               private val shapesFactory: DrawableShapesFactory)
     : OnFrameObserver {
 
     private var onDestroyCallback: ((DrawableShape) -> Boolean)? = null
     private var onCreateCallback: ((DrawableShape) -> DrawableShape)? = null
     private val storage: MutableList<DrawableShape> = mutableListOf()
-    private val shapesFactory: DrawableShapesFactory =
-            RandomDrawableShapesFactory(storage, spaceManager.gameDisplay)
 
     init {
         onFrameObservable.registerObserver(this)

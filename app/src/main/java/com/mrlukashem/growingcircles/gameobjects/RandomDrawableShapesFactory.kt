@@ -13,9 +13,8 @@ import java.util.*
 import kotlin.math.*
 
 
-class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, private val gameDisplay: Display)
+class RandomDrawableShapesFactory(private val gameDisplay: Display)
     : DrawableShapesFactory {
-
     private val random: Random = Random()
     private val colorsList: List<Int> = listOf(Color.rgb(255, 255, 0),
         Color.rgb(199, 204, 0),
@@ -34,13 +33,14 @@ class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, priva
             Color.rgb(109, 76, 65),
             Color.rgb(244, 67, 54))
 
-    override fun create(shapeType: DrawableShapesFactory.ShapeType): DrawableShape {
+    override fun create(shapeType: DrawableShapesFactory.ShapeType,
+                        actualStorage: MutableList<DrawableShape>): DrawableShape {
         return when (shapeType) {
-            DrawableShapesFactory.ShapeType.CIRCLE_OBJECT -> makeCircleObject()
+            DrawableShapesFactory.ShapeType.CIRCLE_OBJECT -> makeCircleObject(actualStorage)
         }
     }
 
-    private fun makeCircleObject(): DrawableShape {
+    private fun makeCircleObject(existingShapes: MutableList<DrawableShape>): DrawableShape {
         val screenBoundsCollisionStrategy = ScreenBoundsCollisionStrategy(
                 ::lowToleranceCollisionStrategy, gameDisplay)
         val shape = makeCircleObjectInternal()
@@ -48,7 +48,7 @@ class RandomDrawableShapesFactory(private val existingShapes: List<Shape>, priva
             it.hasCollisionWith(shape, screenBoundsCollisionStrategy::collisionOccurred)
         }
         collidedShape?.let {
-            return makeCircleObject()
+            return makeCircleObject(existingShapes)
         }
 
 //        val horizontalStep: Int = width() / 4

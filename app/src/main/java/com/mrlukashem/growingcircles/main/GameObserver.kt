@@ -65,7 +65,8 @@ class GameObserver(
     }
 
     private fun prepareShapesController() {
-        drawableShapesController = DrawableShapesController(this, spaceManager)
+        drawableShapesController = DrawableShapesController(this, spaceManager,
+                RandomDrawableShapesFactory(spaceManager.gameDisplay))
     }
 
     private fun prepareGameView() {
